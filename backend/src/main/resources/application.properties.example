@@ -1,0 +1,4 @@
+spring.application.name=taskapp
+spring.datasource.url=jdbc:postgresql://localhost:5432/あなたのDB名
+spring.datasource.username=あなたのユーザー名
+spring.datasource.password=あなたのパスワード
