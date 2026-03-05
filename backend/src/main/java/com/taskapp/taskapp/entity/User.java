@@ -8,6 +8,11 @@ import java.time.LocalDateTime;
 @Table(name = "users")
 public class User {
 
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -93,6 +98,5 @@ public class User {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
-
 
 }
