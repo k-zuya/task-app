@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.taskapp.taskapp.service.UserService;
+import com.taskapp.taskapp.config.JwtUtil;
 import com.taskapp.taskapp.entity.User;
 
 @RestController
@@ -15,10 +16,12 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-    public AuthController(AuthenticationManager authenticationManager, UserService userService) {
+    public AuthController(AuthenticationManager authenticationManager, UserService userService, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     // コンストラクタインジェクション
@@ -30,7 +33,7 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(
                         request.name(), request.password()));
         // 2. 成功したらメッセージを返す
-        return "ログイン成功";
+        return jwtUtil.generateToken(request.name());
     }
 
     @PostMapping("/signup")
