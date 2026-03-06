@@ -45,8 +45,7 @@ public class TaskController {
     // 更新
     @PutMapping("/{id}")
     public Task update(@PathVariable Long id, @RequestBody Task task) {
-        task.setId(id);
-        return taskService.save(task);
+        return taskService.update(id, task);
     }
 
     // 削除
