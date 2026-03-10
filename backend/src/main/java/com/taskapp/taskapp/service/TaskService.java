@@ -2,7 +2,6 @@ package com.taskapp.taskapp.service;
 
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 import com.taskapp.taskapp.entity.Task;
 import com.taskapp.taskapp.repository.TaskRepository;
@@ -12,39 +11,34 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
 
-    // コンストラクタで Repository を受け取る
     public TaskService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
 
-    // 全件取得
     public List<Task> findAll() {
         return taskRepository.findByDeletedFalse();
     }
 
-    // ID検索
-    public Optional<Task> findById(Long id) {
-        return taskRepository.findById(id);
+    public Task findById(Long id) {
+        return taskRepository.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new RuntimeException("タスクが見つかりません: id=" + id));
     }
 
-    // 作成・更新
     public Task save(Task task) {
         return taskRepository.save(task);
     }
 
-    // 削除
     public void deleteById(Long id) {
         Task existing = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("タスクが見つかりません"));
+                .orElseThrow(() -> new RuntimeException("タスクが見つかりません: id=" + id));
         existing.setDeleted(true);
         taskRepository.save(existing);
     }
 
     public Task update(Long id, Task task) {
         Task existing = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("タスクが見つかりません"));
+                .orElseThrow(() -> new RuntimeException("タスクが見つかりません: id=" + id));
 
-        // 送られてきた値がnullでなければ更新
         if (task.getTitle() != null) {
             existing.setTitle(task.getTitle());
         }
@@ -68,5 +62,4 @@ public class TaskService {
         }
         return taskRepository.save(existing);
     }
-
 }

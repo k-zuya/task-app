@@ -19,28 +19,35 @@ function LoginPage() {
       localStorage.setItem('token', token)
       navigate('/')
     } else {
-      setError('ログインに失敗しました')
+      setError('ユーザー名またはパスワードが正しくありません')
     }
   }
 
   return (
-    <div>
-      <h1>ログイン</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <input
-        placeholder="ユーザー名"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <br />
-      <input
-        placeholder="パスワード"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <br />
-      <button onClick={handleLogin}>ログイン</button>
+    <div className="login-wrapper">
+      <div className="login-container">
+        <h1>TaskApp</h1>
+        <p className="login-subtitle">アカウントにログイン</p>
+        {error && <p className="error-message">{error}</p>}
+        <div className="form-group">
+          <label>ユーザー名</label>
+          <input
+            placeholder="ユーザー名を入力"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>パスワード</label>
+          <input
+            placeholder="パスワードを入力"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <button className="login-button" onClick={handleLogin}>ログイン</button>
+      </div>
     </div>
   )
 }

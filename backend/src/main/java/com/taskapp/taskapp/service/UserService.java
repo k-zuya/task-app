@@ -3,7 +3,6 @@ package com.taskapp.taskapp.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 import com.taskapp.taskapp.entity.User;
 import com.taskapp.taskapp.repository.UserRepository;
@@ -15,29 +14,17 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // 全件取得
     public List<User> findAll() {
-        return userRepository.findAll();
+        return userRepository.findByDeletedFalse();
     }
 
-    // ID検索
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
-    }
-
-    // 作成・更新
-    public User save(User user) {
-        return userRepository.save(user);
-    }
-
-    // 削除
-    public void deleteById(Long id) {
-        userRepository.deleteById(id);
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ユーザーが見つかりません: id=" + id));
     }
 
     public User register(User user) {
@@ -45,4 +32,26 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User update(Long id, User user) {
+        User existing = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ユーザーが見つかりません: id=" + id));
+
+        if (user.getName() != null) {
+            existing.setName(user.getName());
+        }
+        if (user.getRole() != null) {
+            existing.setRole(user.getRole());
+        }
+        if (user.getPassword() != null) {
+            existing.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        return userRepository.save(existing);
+    }
+
+    public void deleteById(Long id) {
+        User existing = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ユーザーが見つかりません: id=" + id));
+        existing.setDeleted(true);
+        userRepository.save(existing);
+    }
 }

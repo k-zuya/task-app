@@ -1,17 +1,11 @@
 package com.taskapp.taskapp.controller;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.taskapp.taskapp.service.UserService;
 import java.util.List;
-import java.util.Optional;
 
 import com.taskapp.taskapp.entity.User;
 
@@ -30,28 +24,36 @@ public class UserController {
         return userService.findAll();
     }
 
-    // ID検索
     @GetMapping("/{id}")
-    public Optional<User> findById(@PathVariable Long id) {
-        return userService.findById(id);
+    public User findById(@PathVariable Long id) {
+        try {
+            return userService.findById(id);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    // 作成
     @PostMapping
     public User create(@RequestBody User user) {
-        return userService.save(user);
+        return userService.register(user);
     }
 
-    // 更新
     @PutMapping("/{id}")
     public User update(@PathVariable Long id, @RequestBody User user) {
-        user.setId(id);
-        return userService.save(user);
+        try {
+            return userService.update(id, user);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    // 削除
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        userService.deleteById(id);
+        try {
+            userService.deleteById(id);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 }

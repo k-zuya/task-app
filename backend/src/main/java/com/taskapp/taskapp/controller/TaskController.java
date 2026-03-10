@@ -1,17 +1,11 @@
 package com.taskapp.taskapp.controller;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.taskapp.taskapp.service.TaskService;
 import java.util.List;
-import java.util.Optional;
 
 import com.taskapp.taskapp.entity.Task;
 
@@ -30,27 +24,36 @@ public class TaskController {
         return taskService.findAll();
     }
 
-    // ID検索
     @GetMapping("/{id}")
-    public Optional<Task> findById(@PathVariable Long id) {
-        return taskService.findById(id);
+    public Task findById(@PathVariable Long id) {
+        try {
+            return taskService.findById(id);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    // 作成
     @PostMapping
     public Task create(@RequestBody Task task) {
         return taskService.save(task);
     }
 
-    // 更新
     @PutMapping("/{id}")
     public Task update(@PathVariable Long id, @RequestBody Task task) {
-        return taskService.update(id, task);
+        try {
+            return taskService.update(id, task);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    // 削除
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        taskService.deleteById(id);
+        try {
+            taskService.deleteById(id);
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 }
