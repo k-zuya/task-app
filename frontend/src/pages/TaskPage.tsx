@@ -32,6 +32,10 @@ function TaskPage() {
             },
             body: JSON.stringify({ title }),
         })
+        if (res.ok) {
+            setTitle('')
+            fetchTasks()
+        }
     }
     const handleEdit = async (id: number) => {     // ← 作成関数
         const res = await fetch(`/api/tasks/${id}`, {
