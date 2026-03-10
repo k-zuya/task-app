@@ -20,8 +20,12 @@ function TaskPage() {
         fetch('/api/tasks', {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
         })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Unauthorized')
+                return res.json()
+            })
             .then(data => setTasks(data))
+            .catch(() => navigate('/login'))
     }
     const handleCreate = async () => {     // ← 作成関数
         const res = await fetch('/api/tasks', {
